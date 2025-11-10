@@ -4,6 +4,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '0a2f15f1-1565-45fd-8b4a-fd90d4c30fe3'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        CI = 'true'
     }
 
     stages {
@@ -60,16 +61,30 @@ pipeline {
 
                     steps {
                         sh '''
+                            # Install serve (Playwright will use it)
                             npm install serve
-                            node_modules/.bin/serve -s build &
-                            sleep 10
-                            npx playwright test  --reporter=html
+                            
+                            # Verify build exists
+                            ls -la build/
+                            
+                            # Let Playwright handle the server startup
+                            echo "Running Playwright tests (Playwright will start the server)..."
+                            npx playwright test --reporter=html
                         '''
                     }
 
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([
+                                allowMissing: false, 
+                                alwaysLinkToLastBuild: false, 
+                                keepAll: false, 
+                                reportDir: 'playwright-report', 
+                                reportFiles: 'index.html', 
+                                reportName: 'Playwright HTML Report', 
+                                reportTitles: '', 
+                                useWrapperFileDirectly: true
+                            ])
                         }
                     }
                 }
