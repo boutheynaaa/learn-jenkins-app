@@ -61,14 +61,16 @@ pipeline {
 
                     steps {
                         sh '''
-                            # Install serve (Playwright will use it)
+                            # Install serve (Playwright will use it via webServer config)
                             npm install serve
                             
                             # Verify build exists
+                            echo "Checking build directory..."
                             ls -la build/
+                            test -f build/index.html || (echo "build/index.html not found!" && exit 1)
                             
-                            # Let Playwright handle the server startup
-                            echo "Running Playwright tests (Playwright will start the server)..."
+                            # Run Playwright tests (it will automatically start the server)
+                            echo "Running Playwright tests..."
                             npx playwright test --reporter=html
                         '''
                     }
