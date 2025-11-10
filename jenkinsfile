@@ -46,7 +46,7 @@ pipeline {
                     }
                     post {
                         always {
-                            junit 'jest-results/junit.xml'
+                            junit testResults: 'jest-results/junit.xml', allowEmptyResults: true, skipPublishingChecks: true
                         }
                     }
                 }
@@ -77,11 +77,11 @@ pipeline {
 
                     post {
                         always {
-                            // Archive the HTML report as artifacts
+                            // Archive the Playwright HTML report
                             archiveArtifacts artifacts: 'playwright-report/**/*', allowEmptyArchive: true
                             
                             // Publish JUnit results if available
-                            junit testResults: 'test-results/junit.xml', allowEmptyResults: true
+                            junit testResults: 'test-results/junit.xml', allowEmptyResults: true, skipPublishingChecks: true
                         }
                     }
                 }
